@@ -1,0 +1,25 @@
+{
+  "name": "adventofcode2019tsc",
+  "version": "1.0.0",
+  "description": "Advent of Code 2019 solutions in TypeScript",
+  "homepage": "https://github.com/bno1/adventofcode2019ts",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/bno1/adventofcode2019ts"
+  },
+  "main": "build/aoc.js",
+  "scripts": {
+    "build": "tsc",
+    "aoc": "node build/aoc.js",
+    "test": "ts-node node_modules/.bin/jasmine \"spec/*.spec.ts\""
+  },
+  "author": "bno1",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jasmine": "^3.5.0",
+    "@types/node": "^12.12.14",
+    "jasmine": "^3.5.0",
+    "ts-node": "^8.5.4",
+    "typescript": "^3.7.2"
+  }
+}
