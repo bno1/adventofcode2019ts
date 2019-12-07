@@ -48,4 +48,4 @@ class ChallengeD01 extends ChallengeFromFile {
   }
 }
 
-ChallengeRegistry.getInstance().registerChallenge("d01", new ChallengeD01());
+ChallengeRegistry.getInstance().registerChallenge(new ChallengeD01());

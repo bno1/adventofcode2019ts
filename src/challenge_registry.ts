@@ -24,11 +24,11 @@ export class ChallengeRegistry {
     }
   }
 
-  public registerChallenge(name: string, challenge: IChallenge) {
-    if (name in this.challenges) {
-      throw new Error(`Challenge "${name}" already registered`);
+  public registerChallenge(challenge: IChallenge) {
+    if (challenge.name in this.challenges) {
+      throw new Error(`Challenge "${challenge.name}" already registered`);
     }
 
-    this.challenges[name] = challenge;
+    this.challenges[challenge.name] = challenge;
   }
 }
