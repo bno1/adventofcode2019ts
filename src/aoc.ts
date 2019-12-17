@@ -4,6 +4,7 @@ import {ChallengeRegistry} from "./challenge_registry";
 import "./d01";
 import "./d02";
 import "./d03";
+import "./d04";
 
 const args: string[] = process.argv.slice(2);
 
