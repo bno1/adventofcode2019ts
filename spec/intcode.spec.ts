@@ -1,4 +1,4 @@
-import {runIntcode} from "../src/intcode";
+import {runIntcode, ProgramResult} from "../src/intcode";
 import "jasmine";
 
 describe("test programs d02", function() {
@@ -59,8 +59,7 @@ describe("test programs d05", function() {
   for (let [program, input, output] of io_cases) {
     it(`program ${program} with input ${input} output ${output}`, function() {
       let state = [...program];
-      const o = runIntcode(state, input);
-      expect(o).toEqual(output);
+      expect(runIntcode(state, input)).toEqual(output);
     });
   }
 });

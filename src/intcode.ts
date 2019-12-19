@@ -1,13 +1,19 @@
-interface State {
+export interface IntcodeState {
   p: number[]
   input: number[]
   output: number[]
   i: number
-  done: boolean
+  done: boolean,
   parmode: [number, number, number]
 }
 
-function getParamAddr(state: State, n: number): number {
+export enum ProgramResult {
+  Continue,
+  Halt,
+  Wait,
+}
+
+function getParamAddr(state: IntcodeState, n: number): number {
   if (n < 0 || n > 2) {
     throw new Error(`Invalid parameter position: ${n}`);
   }
@@ -25,46 +31,54 @@ function getParamAddr(state: State, n: number): number {
 }
 
 interface Instruction {
-  (state: State): void;
+  (state: IntcodeState): ProgramResult;
 }
 
-function add(state: State) {
+function add(state: IntcodeState): ProgramResult {
   let {p} = state;
   const a = p[getParamAddr(state, 0)];
   const b = p[getParamAddr(state, 1)];
   p[getParamAddr(state, 2)] = a + b;
   state.i += 4;
+
+  return ProgramResult.Continue;
 }
 
-function mult(state: State) {
+function mult(state: IntcodeState): ProgramResult {
   let {p} = state;
   const a = p[getParamAddr(state, 0)];
   const b = p[getParamAddr(state, 1)];
   p[getParamAddr(state, 2)] = a*b;
   state.i += 4;
+
+  return ProgramResult.Continue;
 }
 
-function read(state: State) {
+function read(state: IntcodeState): ProgramResult {
   let {p, input} = state;
 
   let n = input.shift();
   if (n === undefined) {
-    throw new Error("Input is empty");
+    return ProgramResult.Wait;
   }
 
   p[getParamAddr(state, 0)] = n;
   state.i += 2;
+
+  return ProgramResult.Continue;
 }
 
-function write(state: State) {
+function write(state: IntcodeState): ProgramResult {
   let {p, output} = state;
 
   const n = p[getParamAddr(state, 0)];
   output.push(n);
   state.i += 2;
+
+  return ProgramResult.Continue;
 }
 
-function jump_if_true(state: State) {
+function jump_if_true(state: IntcodeState): ProgramResult {
   let {p} = state;
   const a = p[getParamAddr(state, 0)];
   if (a != 0) {
@@ -72,9 +86,11 @@ function jump_if_true(state: State) {
   } else {
     state.i += 3;
   }
+
+  return ProgramResult.Continue;
 }
 
-function jump_if_false(state: State) {
+function jump_if_false(state: IntcodeState): ProgramResult {
   let {p} = state;
   const a = p[getParamAddr(state, 0)];
   if (a == 0) {
@@ -82,26 +98,32 @@ function jump_if_false(state: State) {
   } else {
     state.i += 3;
   }
+
+  return ProgramResult.Continue;
 }
 
-function less_than(state: State) {
+function less_than(state: IntcodeState): ProgramResult {
   let {p} = state;
   const a = p[getParamAddr(state, 0)];
   const b = p[getParamAddr(state, 1)];
   p[getParamAddr(state, 2)] = a < b ? 1 : 0;
   state.i += 4;
+
+  return ProgramResult.Continue;
 }
 
-function equals(state: State) {
+function equals(state: IntcodeState): ProgramResult {
   let {p} = state;
   const a = p[getParamAddr(state, 0)];
   const b = p[getParamAddr(state, 1)];
   p[getParamAddr(state, 2)] = a == b ? 1 : 0;
   state.i += 4;
+
+  return ProgramResult.Continue;
 }
 
-function halt(state: State) {
-  state.done = true;
+function halt(state: IntcodeState) {
+  return ProgramResult.Halt;
 }
 
 const INSTRUCTIONS: {[id: number]: Instruction} = {
@@ -116,8 +138,8 @@ const INSTRUCTIONS: {[id: number]: Instruction} = {
   99: halt
 }
 
-export function runIntcode(p: number[], input: number[] = []): number[] {
-  let state: State = {
+export function startIntcode(p: number[], input: number[] = []): IntcodeState {
+  return {
     p: p,
     input: input,
     output: [],
@@ -125,8 +147,10 @@ export function runIntcode(p: number[], input: number[] = []): number[] {
     done: false,
     parmode: [0, 0, 0],
   };
+}
 
-  while (!state.done) {
+export function wakeIntcode(state: IntcodeState): ProgramResult {
+  while (true) {
     let instr_n = state.p[state.i];
     const opcode = instr_n % 100;
     instr_n = instr_n / 100 | 0;
@@ -139,8 +163,46 @@ export function runIntcode(p: number[], input: number[] = []): number[] {
     instr_n = instr_n / 10 | 0;
 
     const instr = INSTRUCTIONS[opcode];
-    instr(state);
-  }
+    const result = instr(state);
+    switch (result) {
+      case ProgramResult.Continue:
+        break;
 
-  return state.output;
+      case ProgramResult.Halt:
+        state.done = true;
+        // fallthrough
+      case ProgramResult.Wait:
+        return result;
+    }
+  }
+}
+
+export function runIntcode(p: number[], input: number[] = []): number[] {
+  let state = startIntcode(p, input);
+
+  while (true) {
+    let instr_n = state.p[state.i];
+    const opcode = instr_n % 100;
+    instr_n = instr_n / 100 | 0;
+
+    state.parmode[0] = instr_n % 10;
+    instr_n = instr_n / 10 | 0;
+    state.parmode[1] = instr_n % 10;
+    instr_n = instr_n / 10 | 0;
+    state.parmode[2] = instr_n % 10;
+    instr_n = instr_n / 10 | 0;
+
+    const instr = INSTRUCTIONS[opcode];
+    const result = instr(state);
+    switch (result) {
+      case ProgramResult.Continue:
+        break;
+
+      case ProgramResult.Wait:
+        throw new Error("Program waiting for input");
+
+      case ProgramResult.Halt:
+        return state.output;
+    }
+  }
 }
