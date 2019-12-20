@@ -8,6 +8,7 @@ import "./d04";
 import "./d05";
 import "./d06";
 import "./d07";
+import "./d08";
 
 const args: string[] = process.argv.slice(2);
 
