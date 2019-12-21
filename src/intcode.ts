@@ -1,10 +1,11 @@
 export interface IntcodeState {
-  p: number[]
-  input: number[]
-  output: number[]
-  i: number
+  p: number[],
+  input: number[],
+  output: number[],
+  i: number,
   done: boolean,
-  parmode: [number, number, number]
+  parmode: [number, number, number],
+  rel_base: number,
 }
 
 export enum ProgramResult {
@@ -13,21 +14,52 @@ export enum ProgramResult {
   Wait,
 }
 
+function readMemory(p: number[], x: number): number {
+  if (x >= p.length) {
+    return 0;
+  } else {
+    return p[x];
+  }
+}
+
+function writeMemory(p: number[], x: number, v: number) {
+  if (x >= p.length) {
+    for (let i = p.length; i <= x; i++) {
+      p.push(0);
+    }
+  }
+
+  p[x] = v;
+}
+
 function getParamAddr(state: IntcodeState, n: number): number {
   if (n < 0 || n > 2) {
     throw new Error(`Invalid parameter position: ${n}`);
   }
 
-  switch (state.parmode[n]) {
+  let {p, i, parmode, rel_base} = state;
+
+  switch (parmode[n]) {
     case 0:
-      return state.p[state.i + n + 1];
+      return readMemory(p, i + n + 1);
 
     case 1:
-      return state.i + n + 1;
+      return i + n + 1;
+
+    case 2:
+      return rel_base + readMemory(p, i + n + 1);
 
     default:
-      throw new Error(`Invalid parameter mode: ${state.parmode[n]}`);
+      throw new Error(`Invalid parameter mode: ${parmode[n]}`);
   }
+}
+
+function getParamVal(state: IntcodeState, n: number): number {
+  return readMemory(state.p, getParamAddr(state, n));
+}
+
+function setParamVal(state: IntcodeState, n: number, v: number) {
+  writeMemory(state.p, getParamAddr(state, n), v);
 }
 
 interface Instruction {
@@ -35,54 +67,47 @@ interface Instruction {
 }
 
 function add(state: IntcodeState): ProgramResult {
-  let {p} = state;
-  const a = p[getParamAddr(state, 0)];
-  const b = p[getParamAddr(state, 1)];
-  p[getParamAddr(state, 2)] = a + b;
+  const a = getParamVal(state, 0);
+  const b = getParamVal(state, 1);
+  setParamVal(state, 2, a + b);
   state.i += 4;
 
   return ProgramResult.Continue;
 }
 
 function mult(state: IntcodeState): ProgramResult {
-  let {p} = state;
-  const a = p[getParamAddr(state, 0)];
-  const b = p[getParamAddr(state, 1)];
-  p[getParamAddr(state, 2)] = a*b;
+  const a = getParamVal(state, 0);
+  const b = getParamVal(state, 1);
+  setParamVal(state, 2, a*b);
   state.i += 4;
 
   return ProgramResult.Continue;
 }
 
 function read(state: IntcodeState): ProgramResult {
-  let {p, input} = state;
-
-  let n = input.shift();
+  let n = state.input.shift();
   if (n === undefined) {
     return ProgramResult.Wait;
   }
 
-  p[getParamAddr(state, 0)] = n;
+  setParamVal(state, 0, n);
   state.i += 2;
 
   return ProgramResult.Continue;
 }
 
 function write(state: IntcodeState): ProgramResult {
-  let {p, output} = state;
-
-  const n = p[getParamAddr(state, 0)];
-  output.push(n);
+  const n = getParamVal(state, 0);
+  state.output.push(n);
   state.i += 2;
 
   return ProgramResult.Continue;
 }
 
 function jump_if_true(state: IntcodeState): ProgramResult {
-  let {p} = state;
-  const a = p[getParamAddr(state, 0)];
+  const a = getParamVal(state, 0);
   if (a != 0) {
-    state.i = p[getParamAddr(state, 1)];
+    state.i = getParamVal(state, 1);
   } else {
     state.i += 3;
   }
@@ -91,10 +116,9 @@ function jump_if_true(state: IntcodeState): ProgramResult {
 }
 
 function jump_if_false(state: IntcodeState): ProgramResult {
-  let {p} = state;
-  const a = p[getParamAddr(state, 0)];
+  const a = getParamVal(state, 0);
   if (a == 0) {
-    state.i = p[getParamAddr(state, 1)];
+    state.i = getParamVal(state, 1);
   } else {
     state.i += 3;
   }
@@ -103,26 +127,32 @@ function jump_if_false(state: IntcodeState): ProgramResult {
 }
 
 function less_than(state: IntcodeState): ProgramResult {
-  let {p} = state;
-  const a = p[getParamAddr(state, 0)];
-  const b = p[getParamAddr(state, 1)];
-  p[getParamAddr(state, 2)] = a < b ? 1 : 0;
+  const a = getParamVal(state, 0);
+  const b = getParamVal(state, 1);
+  setParamVal(state, 2, a < b ? 1 : 0);
   state.i += 4;
 
   return ProgramResult.Continue;
 }
 
 function equals(state: IntcodeState): ProgramResult {
-  let {p} = state;
-  const a = p[getParamAddr(state, 0)];
-  const b = p[getParamAddr(state, 1)];
-  p[getParamAddr(state, 2)] = a == b ? 1 : 0;
+  const a = getParamVal(state, 0);
+  const b = getParamVal(state, 1);
+  setParamVal(state, 2, a == b ? 1 : 0);
   state.i += 4;
 
   return ProgramResult.Continue;
 }
 
-function halt(state: IntcodeState) {
+function adjust_rel_base(state: IntcodeState): ProgramResult {
+  const a = getParamVal(state, 0);
+  state.rel_base += a;
+  state.i += 2;
+
+  return ProgramResult.Continue;
+}
+
+function halt(_: IntcodeState) {
   return ProgramResult.Halt;
 }
 
@@ -135,6 +165,7 @@ const INSTRUCTIONS: {[id: number]: Instruction} = {
   6: jump_if_false,
   7: less_than,
   8: equals,
+  9: adjust_rel_base,
   99: halt
 }
 
@@ -146,6 +177,7 @@ export function startIntcode(p: number[], input: number[] = []): IntcodeState {
     i: 0,
     done: false,
     parmode: [0, 0, 0],
+    rel_base: 0,
   };
 }
 

@@ -63,3 +63,24 @@ describe("test programs d05", function() {
     });
   }
 });
+
+describe("test programs d09", function() {
+  const cases = [
+    [[109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99],
+     [109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99]],
+    [[104,1125899906842624,99], [1125899906842624]],
+  ];
+
+  for (let [initial, output] of cases) {
+    it(`program ${initial} outputs ${output}`, function() {
+      let state = [...initial];
+      expect(runIntcode(state)).toEqual(output);
+    });
+  }
+
+  it (`program outputs 16-digit integer`, function() {
+    let output = runIntcode([1102,34915192,34915192,7,4,7,99,0]);
+    expect(output.length).toEqual(1);
+    expect(output[0].toString().length).toEqual(16);
+  });
+});
