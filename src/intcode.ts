@@ -1,11 +1,11 @@
-export interface IntcodeState {
-  p: number[],
-  input: number[],
-  output: number[],
-  i: number,
-  done: boolean,
-  parmode: [number, number, number],
-  rel_base: number,
+export interface IIntcodeState {
+  done: boolean;
+  i: number;
+  input: number[];
+  output: number[];
+  p: number[];
+  parmode: [number, number, number];
+  relBase: number;
 }
 
 export enum ProgramResult {
@@ -32,12 +32,12 @@ function writeMemory(p: number[], x: number, v: number) {
   p[x] = v;
 }
 
-function getParamAddr(state: IntcodeState, n: number): number {
+function getParamAddr(state: IIntcodeState, n: number): number {
   if (n < 0 || n > 2) {
     throw new Error(`Invalid parameter position: ${n}`);
   }
 
-  let {p, i, parmode, rel_base} = state;
+  const {p, i, parmode, relBase} = state;
 
   switch (parmode[n]) {
     case 0:
@@ -47,26 +47,24 @@ function getParamAddr(state: IntcodeState, n: number): number {
       return i + n + 1;
 
     case 2:
-      return rel_base + readMemory(p, i + n + 1);
+      return relBase + readMemory(p, i + n + 1);
 
     default:
       throw new Error(`Invalid parameter mode: ${parmode[n]}`);
   }
 }
 
-function getParamVal(state: IntcodeState, n: number): number {
+function getParamVal(state: IIntcodeState, n: number): number {
   return readMemory(state.p, getParamAddr(state, n));
 }
 
-function setParamVal(state: IntcodeState, n: number, v: number) {
+function setParamVal(state: IIntcodeState, n: number, v: number) {
   writeMemory(state.p, getParamAddr(state, n), v);
 }
 
-interface Instruction {
-  (state: IntcodeState): ProgramResult;
-}
+type Instruction = (state: IIntcodeState) => ProgramResult;
 
-function add(state: IntcodeState): ProgramResult {
+function add(state: IIntcodeState): ProgramResult {
   const a = getParamVal(state, 0);
   const b = getParamVal(state, 1);
   setParamVal(state, 2, a + b);
@@ -75,17 +73,17 @@ function add(state: IntcodeState): ProgramResult {
   return ProgramResult.Continue;
 }
 
-function mult(state: IntcodeState): ProgramResult {
+function mult(state: IIntcodeState): ProgramResult {
   const a = getParamVal(state, 0);
   const b = getParamVal(state, 1);
-  setParamVal(state, 2, a*b);
+  setParamVal(state, 2, a * b);
   state.i += 4;
 
   return ProgramResult.Continue;
 }
 
-function read(state: IntcodeState): ProgramResult {
-  let n = state.input.shift();
+function read(state: IIntcodeState): ProgramResult {
+  const n = state.input.shift();
   if (n === undefined) {
     return ProgramResult.Wait;
   }
@@ -96,7 +94,7 @@ function read(state: IntcodeState): ProgramResult {
   return ProgramResult.Continue;
 }
 
-function write(state: IntcodeState): ProgramResult {
+function write(state: IIntcodeState): ProgramResult {
   const n = getParamVal(state, 0);
   state.output.push(n);
   state.i += 2;
@@ -104,9 +102,9 @@ function write(state: IntcodeState): ProgramResult {
   return ProgramResult.Continue;
 }
 
-function jump_if_true(state: IntcodeState): ProgramResult {
+function jump_if_true(state: IIntcodeState): ProgramResult {
   const a = getParamVal(state, 0);
-  if (a != 0) {
+  if (a !== 0) {
     state.i = getParamVal(state, 1);
   } else {
     state.i += 3;
@@ -115,9 +113,9 @@ function jump_if_true(state: IntcodeState): ProgramResult {
   return ProgramResult.Continue;
 }
 
-function jump_if_false(state: IntcodeState): ProgramResult {
+function jump_if_false(state: IIntcodeState): ProgramResult {
   const a = getParamVal(state, 0);
-  if (a == 0) {
+  if (a === 0) {
     state.i = getParamVal(state, 1);
   } else {
     state.i += 3;
@@ -126,7 +124,7 @@ function jump_if_false(state: IntcodeState): ProgramResult {
   return ProgramResult.Continue;
 }
 
-function less_than(state: IntcodeState): ProgramResult {
+function less_than(state: IIntcodeState): ProgramResult {
   const a = getParamVal(state, 0);
   const b = getParamVal(state, 1);
   setParamVal(state, 2, a < b ? 1 : 0);
@@ -135,24 +133,24 @@ function less_than(state: IntcodeState): ProgramResult {
   return ProgramResult.Continue;
 }
 
-function equals(state: IntcodeState): ProgramResult {
+function equals(state: IIntcodeState): ProgramResult {
   const a = getParamVal(state, 0);
   const b = getParamVal(state, 1);
-  setParamVal(state, 2, a == b ? 1 : 0);
+  setParamVal(state, 2, a === b ? 1 : 0);
   state.i += 4;
 
   return ProgramResult.Continue;
 }
 
-function adjust_rel_base(state: IntcodeState): ProgramResult {
+function adjust_relBase(state: IIntcodeState): ProgramResult {
   const a = getParamVal(state, 0);
-  state.rel_base += a;
+  state.relBase += a;
   state.i += 2;
 
   return ProgramResult.Continue;
 }
 
-function halt(_: IntcodeState) {
+function halt(_: IIntcodeState) {
   return ProgramResult.Halt;
 }
 
@@ -165,34 +163,34 @@ const INSTRUCTIONS: {[id: number]: Instruction} = {
   6: jump_if_false,
   7: less_than,
   8: equals,
-  9: adjust_rel_base,
-  99: halt
-}
+  9: adjust_relBase,
+  99: halt,
+};
 
-export function startIntcode(p: number[], input: number[] = []): IntcodeState {
+export function startIntcode(p: number[], input: number[] = []): IIntcodeState {
   return {
-    p: p,
-    input: input,
-    output: [],
-    i: 0,
     done: false,
+    i: 0,
+    input,
+    output: [],
+    p,
     parmode: [0, 0, 0],
-    rel_base: 0,
+    relBase: 0,
   };
 }
 
-export function wakeIntcode(state: IntcodeState): ProgramResult {
+export function wakeIntcode(state: IIntcodeState): ProgramResult {
   while (true) {
-    let instr_n = state.p[state.i];
-    const opcode = instr_n % 100;
-    instr_n = instr_n / 100 | 0;
+    let instrN = state.p[state.i];
+    const opcode = instrN % 100;
+    instrN = Math.trunc(instrN / 100);
 
-    state.parmode[0] = instr_n % 10;
-    instr_n = instr_n / 10 | 0;
-    state.parmode[1] = instr_n % 10;
-    instr_n = instr_n / 10 | 0;
-    state.parmode[2] = instr_n % 10;
-    instr_n = instr_n / 10 | 0;
+    state.parmode[0] = instrN % 10;
+    instrN = Math.trunc(instrN / 10);
+    state.parmode[1] = instrN % 10;
+    instrN = Math.trunc(instrN / 10);
+    state.parmode[2] = instrN % 10;
+    instrN = Math.trunc(instrN / 10);
 
     const instr = INSTRUCTIONS[opcode];
     const result = instr(state);
@@ -210,19 +208,19 @@ export function wakeIntcode(state: IntcodeState): ProgramResult {
 }
 
 export function runIntcode(p: number[], input: number[] = []): number[] {
-  let state = startIntcode(p, input);
+  const state = startIntcode(p, input);
 
   while (true) {
-    let instr_n = state.p[state.i];
-    const opcode = instr_n % 100;
-    instr_n = instr_n / 100 | 0;
+    let instrN = state.p[state.i];
+    const opcode = instrN % 100;
+    instrN = Math.trunc(instrN / 100);
 
-    state.parmode[0] = instr_n % 10;
-    instr_n = instr_n / 10 | 0;
-    state.parmode[1] = instr_n % 10;
-    instr_n = instr_n / 10 | 0;
-    state.parmode[2] = instr_n % 10;
-    instr_n = instr_n / 10 | 0;
+    state.parmode[0] = instrN % 10;
+    instrN = Math.trunc(instrN / 10);
+    state.parmode[1] = instrN % 10;
+    instrN = Math.trunc(instrN / 10);
+    state.parmode[2] = instrN % 10;
+    instrN = Math.trunc(instrN / 10);
 
     const instr = INSTRUCTIONS[opcode];
     const result = instr(state);

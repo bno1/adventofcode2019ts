@@ -2,7 +2,6 @@ import {ChallengeFromFile} from "./challenge";
 import {ChallengeRegistry} from "./challenge_registry";
 import {runIntcode} from "./intcode";
 
-
 class ChallengeD09 extends ChallengeFromFile {
   private input: number[] | null = null;
 
@@ -11,23 +10,23 @@ class ChallengeD09 extends ChallengeFromFile {
   }
 
   public solveFirstStar(): string {
-    let input = this.getInput();
+    const input = this.getInput();
 
-    let output = runIntcode([...input], [1]);
+    const output = runIntcode([...input], [1]);
     return output.toString();
   }
 
   public solveSecondStar(): string {
-    let input = this.getInput();
+    const input = this.getInput();
 
-    let output = runIntcode([...input], [2]);
+    const output = runIntcode([...input], [2]);
     return output.toString();
   }
 
   private getInput(): number[] {
     if (this.input === null) {
       this.input = this.loadInputFile(1)
-        .split(',')
+        .split(",")
         .filter((m) => m)
         .map((m) => parseInt(m, 10));
     }

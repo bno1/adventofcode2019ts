@@ -63,7 +63,10 @@
     /* Advanced Options */
     "forceConsistentCasingInFileNames": true,  /* Disallow inconsistently-cased references to the same file. */
     "plugins": [
-      { "name": "typescript-tslint-plugin" }
+      {
+        "name": "typescript-tslint-plugin",
+        "configFile": "./tslint.json"
+      }
     ]
   },
   "files": ["src/aoc.ts"]

@@ -1,29 +1,24 @@
-interface Array1 {
+interface IArray1 {
   readonly length: number;
   [idx: number]: number;
 
-  fill(value: number): this;
-  fill(value: number, start: number): this;
-  fill(value: number, start: number, end: number): this;
+  fill(value: number, start?: number, end?: number): this;
 
-  slice(begin: number): this;
-  slice(begin: number, end: number): this;
+  slice(begin: number, end?: number): this;
 
   set(array: number[]): void;
 
   forEach(callback: (v: number, i: number, arr: this) => void): void;
 }
 
-interface Array1Constructor<T> {
-  new(size: number): T;
-}
+type IArray1Constructor<T> = new(size: number) => T;
 
-export class Array2<T extends Array1> {
+export class Array2<T extends IArray1> {
   public readonly width: number;
   public readonly height: number;
   private data: T;
 
-  constructor(width: number, height: number, constr: Array1Constructor<T>) {
+  constructor(width: number, height: number, constr: IArray1Constructor<T>) {
     this.width = width;
     this.height = height;
     this.data = new constr(this.width * this.height);
@@ -55,7 +50,7 @@ export class Array2<T extends Array1> {
   }
 
   public rows(): T[] {
-    let rows = [];
+    const rows = [];
 
     for (let i = 0; i < this.height; i++) {
       rows.push(this.data.slice(i * this.width, (i + 1) * this.width));
@@ -65,12 +60,6 @@ export class Array2<T extends Array1> {
   }
 
   public toString(): string {
-    let rows = [];
-
-    for (let i = 0; i < this.height; i++) {
-      rows.push(this.data.slice(i * this.width, (i + 1) * this.width));
-    }
-
-    return rows.map((r) => r.toString()).join('\n');
+    return this.rows().map((r) => r.toString()).join("\n");
   }
 }

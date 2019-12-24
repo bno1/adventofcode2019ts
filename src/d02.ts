@@ -12,7 +12,7 @@ class ChallengeD02 extends ChallengeFromFile {
   }
 
   public solveFirstStar(): string {
-    let input = this.getInput();
+    const input = this.getInput();
 
     input[1] = 12;
     input[2] = 2;
@@ -23,28 +23,29 @@ class ChallengeD02 extends ChallengeFromFile {
   }
 
   public solveSecondStar(): string {
-    let base_input = this.getInput();
+    const baseInput = this.getInput();
 
     for (let noun = 0; noun < 100; noun++) {
       for (let verb = 0; verb < 100; verb++) {
-        let input = [...base_input];
+        const input = [...baseInput];
         input[1] = noun;
         input[2] = verb;
 
         runIntcode(input);
 
-        if (input[0] == STAR2_TARGET) {
+        if (input[0] === STAR2_TARGET) {
           return (100 * noun + verb).toString();
         }
       }
     }
-    return 'Not Found';
+
+    return "Not Found";
   }
 
   private getInput(): number[] {
     if (this.input === null) {
       this.input = this.loadInputFile(1)
-        .split(',')
+        .split(",")
         .filter((m) => m)
         .map((m) => parseInt(m, 10));
     }

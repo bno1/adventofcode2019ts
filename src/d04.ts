@@ -1,13 +1,12 @@
 import {ChallengeFromFile} from "./challenge";
 import {ChallengeRegistry} from "./challenge_registry";
 
-
 function iterate_passwords(
   state: number[], end: number, next: (n: number[]) => void,
-  has_double: boolean = false, restart: boolean = false, p: number = 0): boolean
-{
-  if (p == state.length) {
-    const n = state.reduce((n, x) => n * 10 + x, 0);
+  hasDouble: boolean = false, restart: boolean = false, p: number = 0,
+): boolean {
+  if (p === state.length) {
+    const n = state.reduce((s, x) => s * 10 + x, 0);
 
     if (n <= end) {
       next(state);
@@ -29,7 +28,7 @@ function iterate_passwords(
     }
   }
 
-  if (p == state.length - 1 && !has_double) {
+  if (p === state.length - 1 && !hasDouble) {
     state[p] = k;
     return iterate_passwords(state, end, next, true, restart, p + 1);
   }
@@ -37,7 +36,7 @@ function iterate_passwords(
   while (i < 10) {
     state[p] = i;
 
-    if (!iterate_passwords(state, end, next, has_double || k == i, restart, p + 1)) {
+    if (!iterate_passwords(state, end, next, hasDouble || k === i, restart, p + 1)) {
       return false;
     }
 
@@ -49,9 +48,9 @@ function iterate_passwords(
 }
 
 function composition(seq: number[]): number[] {
-  let comp = [];
+  const comp = [];
 
-  for (let x of seq) {
+  for (const x of seq) {
     if (x in comp) {
       comp[x] += 1;
     } else {
@@ -63,15 +62,15 @@ function composition(seq: number[]): number[] {
 }
 
 class ChallengeD04 extends ChallengeFromFile {
-  private input_start: number[] | null = null;
-  private input_end: number | null = null;
+  private inputStart: number[] | null = null;
+  private inputEnd: number | null = null;
 
   constructor() {
     super("d04");
   }
 
   public solveFirstStar(): string {
-    let [start, end] = this.getInput();
+    const [start, end] = this.getInput();
 
     let count = 0;
 
@@ -83,7 +82,7 @@ class ChallengeD04 extends ChallengeFromFile {
   }
 
   public solveSecondStar(): string {
-    let [start, end] = this.getInput();
+    const [start, end] = this.getInput();
 
     let count = 0;
 
@@ -98,18 +97,18 @@ class ChallengeD04 extends ChallengeFromFile {
   }
 
   private getInput(): [number[], number] {
-    if (this.input_start === null || this.input_end === null) {
+    if (this.inputStart === null || this.inputEnd === null) {
       const match = this.loadInputFile(1).match(/(\d+)-(\d+)/);
 
       if (match === null) {
         throw new Error("Invalid input");
       }
 
-      this.input_start = match[1].split('').map((v) => parseInt(v, 10));
-      this.input_end = parseInt(match[2], 10);
+      this.inputStart = match[1].split("").map((v) => parseInt(v, 10));
+      this.inputEnd = parseInt(match[2], 10);
     }
 
-    return [[...this.input_start], this.input_end];
+    return [[...this.inputStart], this.inputEnd];
   }
 }
 

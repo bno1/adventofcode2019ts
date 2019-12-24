@@ -2,11 +2,10 @@ import {ChallengeFromFile} from "./challenge";
 import {ChallengeRegistry} from "./challenge_registry";
 import {runIntcode, startIntcode, wakeIntcode} from "./intcode";
 
-
 export function runAmplifiers(
-  p: number[], input: number, phases: number[]): number
-{
-  for (let ph of phases) {
+  p: number[], input: number, phases: number[],
+): number {
+  for (const ph of phases) {
     input = runIntcode([...p], [ph, input])[0];
   }
 
@@ -14,10 +13,10 @@ export function runAmplifiers(
 }
 
 export function runAmplifiers2(
-  p: number[], input: number, phases: number[]): number
-{
-  let q = phases.map((ph) => startIntcode([...p], [ph]));
-  let last_thrust = -1;
+  p: number[], input: number, phases: number[],
+): number {
+  const q = phases.map((ph) => startIntcode([...p], [ph]));
+  let lastThrust = -1;
 
   while (true) {
     for (let i = 0; i < phases.length; i++) {
@@ -36,30 +35,30 @@ export function runAmplifiers2(
       input = o;
     }
 
-    last_thrust = input;
+    lastThrust = input;
 
     if (q[q.length - 1].done) {
-      return last_thrust;
+      return lastThrust;
     }
   }
 }
 
 function enumeratePhases(
-  phase_start: number, phase_end: number, callback: (phases: number[]) => void,
-  phases: number[] = [])
-{
-  if (phases.length >= phase_end - phase_start + 1) {
+  phaseStart: number, phaseEnd: number, callback: (phases: number[]) => void,
+  phases: number[] = [],
+) {
+  if (phases.length >= phaseEnd - phaseStart + 1) {
     callback(phases);
     return;
   }
 
-  for (let ph = phase_start; ph <= phase_end; ph++) {
+  for (let ph = phaseStart; ph <= phaseEnd; ph++) {
     if (phases.indexOf(ph) >= 0) {
       continue;
     }
 
     phases.push(ph);
-    enumeratePhases(phase_start, phase_end, callback, phases);
+    enumeratePhases(phaseStart, phaseEnd, callback, phases);
     phases.pop();
   }
 }
@@ -72,33 +71,33 @@ class ChallengeD07 extends ChallengeFromFile {
   }
 
   public solveFirstStar(): string {
-    let input = this.getInput();
-    let max_thrust = -Infinity;
+    const input = this.getInput();
+    let maxThrust = -Infinity;
 
     enumeratePhases(0, 4, (phases) => {
-      let thrust = runAmplifiers(input, 0, phases);
-      max_thrust = Math.max(max_thrust, thrust);
+      const thrust = runAmplifiers(input, 0, phases);
+      maxThrust = Math.max(maxThrust, thrust);
     });
 
-    return max_thrust.toString();
+    return maxThrust.toString();
   }
 
   public solveSecondStar(): string {
-    let input = this.getInput();
-    let max_thrust = -Infinity;
+    const input = this.getInput();
+    let maxThrust = -Infinity;
 
     enumeratePhases(5, 9, (phases) => {
-      let thrust = runAmplifiers2(input, 0, phases);
-      max_thrust = Math.max(max_thrust, thrust);
+      const thrust = runAmplifiers2(input, 0, phases);
+      maxThrust = Math.max(maxThrust, thrust);
     });
 
-    return max_thrust.toString();
+    return maxThrust.toString();
   }
 
   private getInput(): number[] {
     if (this.input === null) {
       this.input = this.loadInputFile(1)
-        .split(',')
+        .split(",")
         .filter((m) => m)
         .map((m) => parseInt(m, 10));
     }

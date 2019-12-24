@@ -1,4 +1,4 @@
-import {runIntcode, ProgramResult} from "../src/intcode";
+import {runIntcode} from "../src/intcode";
 import "jasmine";
 
 describe("test programs d02", function() {

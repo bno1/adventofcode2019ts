@@ -1,24 +1,24 @@
 import {ChallengeFromFile} from "./challenge";
 import {ChallengeRegistry} from "./challenge_registry";
 
-interface Point {
+interface IPoint {
   x: number;
   y: number;
 }
 
-interface Line {
-  p1: Point;
-  p2: Point;
+interface ILine {
+  p1: IPoint;
+  p2: IPoint;
 }
 
-function linesIntersect(a: Line, b: Line): Point | null {
-  let ixmin = Math.max(Math.min(a.p1.x, a.p2.x), Math.min(b.p1.x, b.p2.x));
-  let ixmax = Math.min(Math.max(a.p1.x, a.p2.x), Math.max(b.p1.x, b.p2.x));
-  let iymin = Math.max(Math.min(a.p1.y, a.p2.y), Math.min(b.p1.y, b.p2.y));
-  let iymax = Math.min(Math.max(a.p1.y, a.p2.y), Math.max(b.p1.y, b.p2.y));
+function linesIntersect(a: ILine, b: ILine): IPoint | null {
+  const ixmin = Math.max(Math.min(a.p1.x, a.p2.x), Math.min(b.p1.x, b.p2.x));
+  const ixmax = Math.min(Math.max(a.p1.x, a.p2.x), Math.max(b.p1.x, b.p2.x));
+  const iymin = Math.max(Math.min(a.p1.y, a.p2.y), Math.min(b.p1.y, b.p2.y));
+  const iymax = Math.min(Math.max(a.p1.y, a.p2.y), Math.max(b.p1.y, b.p2.y));
 
   if (ixmin <= ixmax && iymin <= iymax) {
-    let p: Point = {x: 0, y: 0};
+    const p: IPoint = {x: 0, y: 0};
 
     if (Math.abs(ixmin) < Math.abs(ixmax)) {
       p.x = ixmin;
@@ -38,29 +38,29 @@ function linesIntersect(a: Line, b: Line): Point | null {
   return null;
 }
 
-function instructionToLines(instructions: string[]): Line[] {
-  let p: Point = {x: 0, y: 0};
-  let q: Point;
-  let lines: Line[] = [];
+function instructionToLines(instructions: string[]): ILine[] {
+  let p: IPoint = {x: 0, y: 0};
+  let q: IPoint;
+  const lines: ILine[] = [];
 
-  for (let instr of instructions) {
-    let d = instr[0];
-    let n = parseInt(instr.slice(1), 10);
+  for (const instr of instructions) {
+    const d = instr[0];
+    const n = parseInt(instr.slice(1), 10);
 
     switch (d) {
-    case 'U':
+    case "U":
       q = {x: p.x, y: p.y + n};
       break;
 
-    case 'D':
+    case "D":
       q = {x: p.x, y: p.y - n};
       break;
 
-    case 'R':
+    case "R":
       q = {x: p.x + n, y: p.y};
       break;
 
-    case 'L':
+    case "L":
       q = {x: p.x - n, y: p.y};
       break;
 
@@ -75,23 +75,23 @@ function instructionToLines(instructions: string[]): Line[] {
   return lines;
 }
 
-function manhattenDistance(p1: Point, p2: Point) {
+function manhattenDistance(p1: IPoint, p2: IPoint) {
   return Math.abs(p1.x - p2.x) + Math.abs(p1.y - p2.y);
 }
 
 export function intersectionDistance(instr1: string[], instr2: string[]): number {
-  let lines1 = instructionToLines(instr1);
+  const lines1 = instructionToLines(instr1);
   let md = Infinity;
 
-  for (let line of instructionToLines(instr2)) {
-    for (let testLine of lines1) {
-      let q = linesIntersect(line, testLine);
+  for (const line of instructionToLines(instr2)) {
+    for (const testLine of lines1) {
+      const q = linesIntersect(line, testLine);
 
       if (q !== null) {
-        let q_md = manhattenDistance({x: 0, y: 0}, q);
+        const qMD = manhattenDistance({x: 0, y: 0}, q);
 
-        if (q_md < md && q_md > 0) {
-          md = q_md;
+        if (qMD < md && qMD > 0) {
+          md = qMD;
         }
       }
     }
@@ -101,22 +101,22 @@ export function intersectionDistance(instr1: string[], instr2: string[]): number
 }
 
 export function intersectionDelay(instr1: string[], instr2: string[]): number {
-  let lines1 = instructionToLines(instr1);
+  const lines1 = instructionToLines(instr1);
   let delay = Infinity;
 
   let steps2 = 0;
-  for (let line of instructionToLines(instr2)) {
+  for (const line of instructionToLines(instr2)) {
     let steps1 = 0;
 
-    for (let testLine of lines1) {
-      let q = linesIntersect(line, testLine);
+    for (const testLine of lines1) {
+      const q = linesIntersect(line, testLine);
 
       if (q != null) {
-        let q_delay = steps1 + steps2 + manhattenDistance(line.p1, q)
-                      + manhattenDistance(testLine.p1, q);
+        const qDelay = steps1 + steps2 + manhattenDistance(line.p1, q)
+                       + manhattenDistance(testLine.p1, q);
 
-        if (q_delay < delay && q_delay > 0) {
-          delay = q_delay;
+        if (qDelay < delay && qDelay > 0) {
+          delay = qDelay;
         }
       }
 
@@ -137,15 +137,15 @@ class ChallengeD03 extends ChallengeFromFile {
   }
 
   public solveFirstStar(): string {
-    let input = this.getInput();
-    let md = intersectionDistance(input[0], input[1]);
+    const input = this.getInput();
+    const md = intersectionDistance(input[0], input[1]);
 
     return md.toString();
   }
 
   public solveSecondStar(): string {
-    let input = this.getInput();
-    let delay = intersectionDelay(input[0], input[1]);
+    const input = this.getInput();
+    const delay = intersectionDelay(input[0], input[1]);
 
     return delay.toString();
   }
@@ -153,11 +153,11 @@ class ChallengeD03 extends ChallengeFromFile {
   private getInput(): string[][] {
     if (this.input === null) {
       this.input = this.loadInputFile(1)
-        .split('\n')
+        .split("\n")
         .filter((m) => m)
         .map((instr) => instr
-          .split(',')
-          .filter((m) => m)
+          .split(",")
+          .filter((m) => m),
         );
     }
 

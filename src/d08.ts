@@ -1,7 +1,6 @@
+import {Array2} from "./array2";
 import {ChallengeFromFile} from "./challenge";
 import {ChallengeRegistry} from "./challenge_registry";
-import {Array2} from "./array2";
-
 
 type Layer = Array2<Uint8Array>;
 
@@ -10,10 +9,10 @@ const IMAGE_HEIGHT = 6;
 const IMAGE_PIXELS = IMAGE_WIDTH * IMAGE_HEIGHT;
 
 function readLayers(pixels: number[]): Layer[] {
-  let layers: Layer[] = [];
+  const layers: Layer[] = [];
 
   for (let i = 0; i < pixels.length; i += IMAGE_PIXELS) {
-    let layer = new Array2(IMAGE_WIDTH, IMAGE_HEIGHT, Uint8Array);
+    const layer = new Array2(IMAGE_WIDTH, IMAGE_HEIGHT, Uint8Array);
     layer.set(pixels.slice(i, i + IMAGE_PIXELS));
     layers.push(layer);
   }
@@ -29,37 +28,37 @@ class ChallengeD08 extends ChallengeFromFile {
   }
 
   public solveFirstStar(): string {
-    let input = this.getInput();
-    let layers = readLayers(input);
-    let best_counts: {[key: number]: number} = {
-      0: Infinity
+    const input = this.getInput();
+    const layers = readLayers(input);
+    let bestCounts: {[key: number]: number} = {
+      0: Infinity,
     };
 
-    for (let layer of layers) {
-      let counts: {[key: number]: number} = {0: 0, 1: 0, 2: 0};
+    for (const layer of layers) {
+      const counts: {[key: number]: number} = {0: 0, 1: 0, 2: 0};
 
       layer.forEach((v) => counts[v]++);
-      if (counts[0] < best_counts[0]) {
-        best_counts = counts;
+      if (counts[0] < bestCounts[0]) {
+        bestCounts = counts;
       }
     }
 
-    return (best_counts[1] * best_counts[2]).toString();
+    return (bestCounts[1] * bestCounts[2]).toString();
   }
 
   public solveSecondStar(): string {
-    let input = this.getInput();
-    let layers = readLayers(input);
+    const input = this.getInput();
+    const layers = readLayers(input);
 
-    let render = new Array2(IMAGE_WIDTH, IMAGE_HEIGHT, Uint8Array);
+    const render = new Array2(IMAGE_WIDTH, IMAGE_HEIGHT, Uint8Array);
     render.fill(2);
 
-    for (let layer of layers) {
+    for (const layer of layers) {
       for (let y = 0; y < render.height; y++) {
         for (let x = 0; x < render.width; x++) {
-          if (render.read(x, y) == 2) {
+          if (render.read(x, y) === 2) {
             const v = layer.read(x, y);
-            if (v != 2) {
+            if (v !== 2) {
               render.write(x, y, v);
             }
           }
@@ -67,16 +66,16 @@ class ChallengeD08 extends ChallengeFromFile {
       }
     }
 
-    return '\n' + render.rows()
-      .map((row) => Array.from(row).map((v) => [' ', '█'][v]).join(''))
-      .join('\n');
+    return "\n" + render.rows()
+      .map((row) => Array.from(row).map((v) => [" ", "█"][v]).join(""))
+      .join("\n");
   }
 
   private getInput(): number[] {
     if (this.input === null) {
       this.input = this.loadInputFile(1)
-        .split('')
-        .filter((m) => m >= '0' && m <= '9')
+        .split("")
+        .filter((m) => m >= "0" && m <= "9")
         .map((m) => parseInt(m, 10));
     }
 
