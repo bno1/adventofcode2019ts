@@ -1,20 +1,9 @@
 import {Array2} from "./array2";
 import {ChallengeFromFile} from "./challenge";
 import {ChallengeRegistry} from "./challenge_registry";
+import {gcd} from "./common";
 
 type Map = Array2<Uint8Array>;
-
-function gcd(a: number, b: number) {
-  let tmp: number;
-
-  while (b !== 0) {
-    tmp = a % b;
-    a = b;
-    b = tmp;
-  }
-
-  return a;
-}
 
 // Quadrant of a point.
 function quadrant(x: number, y: number): number {
