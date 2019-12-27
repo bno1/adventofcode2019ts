@@ -9,7 +9,7 @@ class ChallengeD05 extends ChallengeFromFile {
     super("d05");
   }
 
-  public solveFirstStar(): string {
+  public async solveFirstStar(): Promise<string> {
     const input = this.getInput();
 
     const output = runIntcode(input, [1]);
@@ -17,7 +17,7 @@ class ChallengeD05 extends ChallengeFromFile {
     return output.toString();
   }
 
-  public solveSecondStar(): string {
+  public async solveSecondStar(): Promise<string> {
     const input = this.getInput();
 
     const output = runIntcode(input, [5]);

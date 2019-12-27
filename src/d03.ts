@@ -136,14 +136,14 @@ class ChallengeD03 extends ChallengeFromFile {
     super("d03");
   }
 
-  public solveFirstStar(): string {
+  public async solveFirstStar(): Promise<string> {
     const input = this.getInput();
     const md = intersectionDistance(input[0], input[1]);
 
     return md.toString();
   }
 
-  public solveSecondStar(): string {
+  public async solveSecondStar(): Promise<string> {
     const input = this.getInput();
     const delay = intersectionDelay(input[0], input[1]);
 

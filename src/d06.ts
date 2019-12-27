@@ -64,7 +64,7 @@ class ChallengeD06 extends ChallengeFromFile {
     super("d06");
   }
 
-  public solveFirstStar(): string {
+  public async solveFirstStar(): Promise<string> {
     const input = this.getInput();
 
     const index = generateObjectTree(input);
@@ -77,7 +77,7 @@ class ChallengeD06 extends ChallengeFromFile {
     return orbits.toString();
   }
 
-  public solveSecondStar(): string {
+  public async solveSecondStar(): Promise<string> {
     const input = this.getInput();
 
     const index = generateObjectTree(input);

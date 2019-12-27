@@ -4,8 +4,8 @@ import path from "path";
 export interface IChallenge {
   readonly name: string;
 
-  solveFirstStar(): string;
-  solveSecondStar(): string;
+  solveFirstStar(): Promise<string>;
+  solveSecondStar(): Promise<string>;
 }
 
 export abstract class ChallengeFromFile implements IChallenge {
@@ -15,8 +15,8 @@ export abstract class ChallengeFromFile implements IChallenge {
     this.name = name;
   }
 
-  public abstract solveFirstStar(): string;
-  public abstract solveSecondStar(): string;
+  public async abstract solveFirstStar(): Promise<string>;
+  public async abstract solveSecondStar(): Promise<string>;
 
   protected loadInputFile(star: number): string {
     const filename = path.join(__dirname, `../inputs/${this.name}_${star}.txt`);

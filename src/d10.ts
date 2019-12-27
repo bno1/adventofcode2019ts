@@ -170,7 +170,7 @@ class ChallengeD10 extends ChallengeFromFile {
     super("d10");
   }
 
-  public solveFirstStar(): string {
+  public async solveFirstStar(): Promise<string> {
     const map = this.getInput();
     const rays = generateRays(map.width, map.height);
 
@@ -179,7 +179,7 @@ class ChallengeD10 extends ChallengeFromFile {
     return `${score} at ${pos}`;
   }
 
-  public solveSecondStar(): string {
+  public async solveSecondStar(): Promise<string> {
     const map = this.getInput();
     const rays = generateRays(map.width, map.height);
 

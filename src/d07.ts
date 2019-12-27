@@ -70,7 +70,7 @@ class ChallengeD07 extends ChallengeFromFile {
     super("d07");
   }
 
-  public solveFirstStar(): string {
+  public async solveFirstStar(): Promise<string> {
     const input = this.getInput();
     let maxThrust = -Infinity;
 
@@ -82,7 +82,7 @@ class ChallengeD07 extends ChallengeFromFile {
     return maxThrust.toString();
   }
 
-  public solveSecondStar(): string {
+  public async solveSecondStar(): Promise<string> {
     const input = this.getInput();
     let maxThrust = -Infinity;
 

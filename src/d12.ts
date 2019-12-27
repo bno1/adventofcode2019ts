@@ -116,7 +116,7 @@ class ChallengeD12 extends ChallengeFromFile {
     super("d12");
   }
 
-  public solveFirstStar(): string {
+  public async solveFirstStar(): Promise<string> {
     const input = this.getInput();
     const moons = createMoons(input);
 
@@ -127,7 +127,7 @@ class ChallengeD12 extends ChallengeFromFile {
     return computeEnergy(moons).toString();
   }
 
-  public solveSecondStar(): string {
+  public async solveSecondStar(): Promise<string> {
     const input = this.getInput();
     const moons = createMoons(input);
 

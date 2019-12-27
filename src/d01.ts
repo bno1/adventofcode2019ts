@@ -22,14 +22,14 @@ class ChallengeD01 extends ChallengeFromFile {
     super("d01");
   }
 
-  public solveFirstStar(): string {
+  public async solveFirstStar(): Promise<string> {
     const totalFuel = this.getInput().map(computeFuelNeeded)
                                      .reduce((sum, f) => sum + f, 0);
 
     return totalFuel.toString();
   }
 
-  public solveSecondStar(): string {
+  public async solveSecondStar(): Promise<string> {
     const totalFuel = this.getInput().map(computeFuelNeeded2)
                                      .reduce((sum, f) => sum + f, 0);
 

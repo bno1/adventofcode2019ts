@@ -9,14 +9,14 @@ class ChallengeD09 extends ChallengeFromFile {
     super("d09");
   }
 
-  public solveFirstStar(): string {
+  public async solveFirstStar(): Promise<string> {
     const input = this.getInput();
 
     const output = runIntcode([...input], [1]);
     return output.toString();
   }
 
-  public solveSecondStar(): string {
+  public async solveSecondStar(): Promise<string> {
     const input = this.getInput();
 
     const output = runIntcode([...input], [2]);

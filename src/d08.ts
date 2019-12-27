@@ -27,7 +27,7 @@ class ChallengeD08 extends ChallengeFromFile {
     super("d08");
   }
 
-  public solveFirstStar(): string {
+  public async solveFirstStar(): Promise<string> {
     const input = this.getInput();
     const layers = readLayers(input);
     let bestCounts: {[key: number]: number} = {
@@ -46,7 +46,7 @@ class ChallengeD08 extends ChallengeFromFile {
     return (bestCounts[1] * bestCounts[2]).toString();
   }
 
-  public solveSecondStar(): string {
+  public async solveSecondStar(): Promise<string> {
     const input = this.getInput();
     const layers = readLayers(input);
 

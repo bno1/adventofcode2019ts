@@ -11,7 +11,7 @@ class ChallengeD02 extends ChallengeFromFile {
     super("d02");
   }
 
-  public solveFirstStar(): string {
+  public async solveFirstStar(): Promise<string> {
     const input = this.getInput();
 
     input[1] = 12;
@@ -22,7 +22,7 @@ class ChallengeD02 extends ChallengeFromFile {
     return input[0].toString();
   }
 
-  public solveSecondStar(): string {
+  public async solveSecondStar(): Promise<string> {
     const baseInput = this.getInput();
 
     for (let noun = 0; noun < 100; noun++) {

@@ -69,7 +69,7 @@ class ChallengeD04 extends ChallengeFromFile {
     super("d04");
   }
 
-  public solveFirstStar(): string {
+  public async solveFirstStar(): Promise<string> {
     const [start, end] = this.getInput();
 
     let count = 0;
@@ -81,7 +81,7 @@ class ChallengeD04 extends ChallengeFromFile {
     return count.toString();
   }
 
-  public solveSecondStar(): string {
+  public async solveSecondStar(): Promise<string> {
     const [start, end] = this.getInput();
 
     let count = 0;

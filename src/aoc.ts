@@ -13,6 +13,7 @@ import "./d09";
 import "./d10";
 import "./d11";
 import "./d12";
+import "./d13";
 
 const args: string[] = process.argv.slice(2);
 
@@ -27,7 +28,7 @@ options:
 `);
 }
 
-function run() {
+async function run() {
   let challengeName = null;
 
   for (const arg of args) {
@@ -55,8 +56,8 @@ function run() {
   const registry = ChallengeRegistry.getInstance();
   const challenge = registry.getChallenge(challengeName);
 
-  console.log(`First star: ${challenge.solveFirstStar()}`);
-  console.log(`Second star: ${challenge.solveSecondStar()}`);
+  console.log(`First star: ${await challenge.solveFirstStar()}`);
+  console.log(`Second star: ${await challenge.solveSecondStar()}`);
 }
 
 run();

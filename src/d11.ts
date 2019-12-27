@@ -93,7 +93,7 @@ class ChallengeD11 extends ChallengeFromFile {
     super("d11");
   }
 
-  public solveFirstStar(): string {
+  public async solveFirstStar(): Promise<string> {
     const input = this.getInput();
     const hull = runPaintingRobot([...input], 0);
 
@@ -107,7 +107,7 @@ class ChallengeD11 extends ChallengeFromFile {
     return count.toString();
   }
 
-  public solveSecondStar(): string {
+  public async solveSecondStar(): Promise<string> {
     const input = this.getInput();
     const hull = runPaintingRobot([...input], 1);
 
