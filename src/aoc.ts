@@ -16,6 +16,7 @@ import "./d12";
 import "./d13";
 import "./d14";
 import "./d15";
+import "./d16";
 
 const args: string[] = process.argv.slice(2);
 
