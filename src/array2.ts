@@ -59,6 +59,10 @@ export class Array2<T extends IArray1> {
     return rows;
   }
 
+  public boundCheck(x: number, y: number): boolean {
+    return x >= 0 && x < this.width && y >= 0 && y < this.height;
+  }
+
   public toString(): string {
     return this.rows().map((r) => r.toString()).join("\n");
   }
