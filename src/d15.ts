@@ -1,6 +1,7 @@
 import {Array2} from "./array2";
 import {ChallengeFromFile} from "./challenge";
 import {ChallengeRegistry} from "./challenge_registry";
+import {findMin} from "./common";
 import {startIntcode, wakeIntcode} from "./intcode";
 
 type Coord = [number, number];
@@ -36,27 +37,6 @@ function eqCoord(a: Coord, b: Coord): boolean {
 
 function manhattenDist(a: Coord, b: Coord): number {
   return Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]);
-}
-
-function findMin<T>(
-  items: Iterable<T>, score: (e: T) => number,
-): [T, number] {
-  let minScore = Infinity;
-  let e: T | null = null;
-
-  for (const elem of items) {
-    const elemScore = score(elem);
-    if (elemScore < minScore) {
-      minScore = elemScore;
-      e = elem;
-    }
-  }
-
-  if (e === null) {
-    throw new Error("Empty list");
-  }
-
-  return [e, minScore];
 }
 
 function astar(map: Map, start: Coord, goal: Coord): number[] {
