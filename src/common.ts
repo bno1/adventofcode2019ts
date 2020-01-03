@@ -15,24 +15,28 @@ export function lcm(a: number, b: number): number {
 }
 
 export function findMin<T>(
-  items: Iterable<T>, score: (e: T) => number,
-): [T, number] {
+  items: Iterable<T>, score: (e: T, idx: number) => number,
+): [T, number, number] {
   let minScore = Infinity;
+  let minIdx = -1;
   let e: T | null = null;
+  let idx = 0;
 
   for (const elem of items) {
-    const elemScore = score(elem);
+    const elemScore = score(elem, idx);
     if (elemScore < minScore) {
       minScore = elemScore;
+      minIdx = idx;
       e = elem;
     }
+    idx++;
   }
 
   if (e === null) {
     throw new Error("Empty list");
   }
 
-  return [e, minScore];
+  return [e, minScore, minIdx];
 }
 
 export function popCountU32(v: number): number {
