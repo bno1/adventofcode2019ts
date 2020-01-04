@@ -24,6 +24,10 @@ export class ChallengeRegistry {
     }
   }
 
+  public listChallenges(): string[] {
+    return Object.keys(this.challenges);
+  }
+
   public registerChallenge(challenge: IChallenge) {
     if (challenge.name in this.challenges) {
       throw new Error(`Challenge "${challenge.name}" already registered`);

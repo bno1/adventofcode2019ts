@@ -20,6 +20,7 @@ import "./d16";
 import "./d17";
 import "./d18";
 import "./d19";
+import "./d20";
 
 const args: string[] = process.argv.slice(2);
 
@@ -35,7 +36,7 @@ options:
 }
 
 async function run() {
-  let challengeName = null;
+  let challengeParam = null;
 
   for (const arg of args) {
     switch (arg) {
@@ -45,8 +46,8 @@ async function run() {
         return;
 
       default:
-        if (challengeName === null) {
-          challengeName = arg;
+        if (challengeParam === null) {
+          challengeParam = arg;
         } else {
           throw new Error(`Unexpected argument "${arg}"`);
         }
@@ -55,15 +56,25 @@ async function run() {
     }
   }
 
-  if (challengeName === null) {
+  if (challengeParam === null) {
     throw new Error(`Challenge name not specified`);
   }
 
   const registry = ChallengeRegistry.getInstance();
-  const challenge = registry.getChallenge(challengeName);
+  const challengeNames = [];
+  if (challengeParam === "all") {
+    challengeNames.push(...registry.listChallenges());
+  } else {
+    challengeNames.push(challengeParam);
+  }
 
-  console.log(`First star: ${await challenge.solveFirstStar()}`);
-  console.log(`Second star: ${await challenge.solveSecondStar()}`);
+  for (const challengeName of challengeNames) {
+    console.log(`Challenge: ${challengeName}`);
+    const challenge = registry.getChallenge(challengeName);
+
+    console.log(`First star: ${await challenge.solveFirstStar()}`);
+    console.log(`Second star: ${await challenge.solveSecondStar()}`);
+  }
 }
 
 run();
