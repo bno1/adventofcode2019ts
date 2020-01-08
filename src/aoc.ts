@@ -23,6 +23,7 @@ import "./d19";
 import "./d20";
 import "./d21";
 import "./d22";
+import "./d23";
 
 const args: string[] = process.argv.slice(2);
 
