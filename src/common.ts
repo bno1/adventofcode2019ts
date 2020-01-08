@@ -1,3 +1,6 @@
+export const BI_ONE = BigInt(1);
+export const BI_ZERO = BigInt(0);
+
 export function gcd(a: number, b: number) {
   let tmp: number;
 
@@ -12,6 +15,48 @@ export function gcd(a: number, b: number) {
 
 export function lcm(a: number, b: number): number {
   return (a * b) / gcd(a, b);
+}
+
+export function extendedEuler(a: number, b: number): [number, number, number] {
+  let q = 0;
+  const r = [a, b];
+  const s = [1, 0];
+  const t = [0, 1];
+  let i = 0;
+  let j = 1 - i;
+
+  while (r[j] !== 0) {
+    q = Math.trunc(r[i] / r[j]);
+    r[i] -= q * r[j];
+    s[i] -= q * s[j];
+    t[i] -= q * t[j];
+
+    i = j;
+    j = 1 - i;
+  }
+
+  return [q, s[i], t[i]];
+}
+
+export function extendedEulerBig(a: bigint, b: bigint): [bigint, bigint, bigint] {
+  let q = BI_ZERO;
+  const r = [a, b];
+  const s = [BI_ONE, BI_ZERO];
+  const t = [BI_ZERO, BI_ONE];
+  let i = 0;
+  let j = 1 - i;
+
+  while (r[j] !== BI_ZERO) {
+    q = r[i] / r[j];
+    r[i] -= q * r[j];
+    s[i] -= q * s[j];
+    t[i] -= q * t[j];
+
+    i = j;
+    j = 1 - i;
+  }
+
+  return [q, s[i], t[i]];
 }
 
 export function findMin<T>(
